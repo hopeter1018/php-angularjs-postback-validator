@@ -12,6 +12,7 @@
         }
 	],
     "require": {
+        "timwhitlock/jparser": "dev-master"
 	},
     "autoload": {
         "psr-4": {
