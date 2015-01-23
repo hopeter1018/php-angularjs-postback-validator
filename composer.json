@@ -1,0 +1,21 @@
+{
+    "name": "hopeter1018/angularjs-postback-validator",
+    "description": "Parse angularjs validator directive from the 'View' file by PHP",
+    "keywords": ["validator", "angularjs"],
+	"version": "0.0.1-dev",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Peter Ho",
+            "email": "hokwaichi@gmail.com",
+            "role": "Developer"
+        }
+	],
+    "require": {
+	},
+    "autoload": {
+        "psr-4": {
+            "Hopeter1018\\AngularjsPostbackValidator\\": "src"
+        }
+    }
+}
