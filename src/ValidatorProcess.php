@@ -101,10 +101,12 @@ class ValidatorProcess
      */
     public static function returnSingleError($fieldname, $errorName) {
         return array(
-            $fieldname => array(
-                '$error' => array($errorName => true,),
-                '$invalid' => true,
-                '$valid' => false,
+            'form' => array(
+                $fieldname => array(
+                    '$error' => array($errorName => true,),
+                    '$invalid' => true,
+                    '$valid' => false,
+                ),
             ),
         );
     }
