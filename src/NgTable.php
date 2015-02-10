@@ -79,7 +79,7 @@ class NgTable
      */
     private function dqlFilterType($field, $type, $value, $get)
     {
-        $searchField = $get . \Zms5\Helpers\StringHelper::randomString(8);
+        $searchField = $get . \Hopeter1018\Helper\String::randomString(8);
         $this->dql->setParameter($searchField, $value);
         APP_IS_DEV and $this->debugMsg[] = "{$field} {$type} :{$searchField} {$value}";
         switch($type) {
@@ -181,7 +181,7 @@ class NgTable
     private function getTotal()
     {
         $dqlStr = $this->dql->getQuery()->getDQL();
-        $stmt = \Zms5\Common\DoctrineBase::conn()->prepare("SELECT count(*) AS total FROM ({$this->dql->getQuery()->getSQL()}) data");
+        $stmt = \Hopeter1018\DoctrineExtension\Connection::conn()->prepare("SELECT count(*) AS total FROM ({$this->dql->getQuery()->getSQL()}) data");
         $params = $this->dql->getQuery()->getParameters();
         $orderParam = array();
         foreach ($params as $param) {
