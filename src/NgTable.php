@@ -4,23 +4,28 @@ namespace Hopeter1018\AngularjsPostbackValidator;
 
 class NgTable
 {
+    const DEFAULT_PAGECOUNT = 20;
+
     /** record per page @var int */
-    public $count = 20;
+    private $count = null;
     /**  array('fieldname'=>'searchvalue', 'fieldname2'=>'searchvalue2')
      * @var array */
-    public $filter;
+    private $filter;
     /** @var int*/
-    public $page;
+    private $page;
     /** @var array array('name'=>'asc') */
-    public $sorting;
+    private $sorting;
     /** @var \Doctrine\ORM\QueryBuilder */
     private $dql;
     /** @var array */
     private $debugMsg;
     /** @var int */
-    private $firstResult = 0;
+    private $firstResult = null;
 
     private $extra = null;
+
+    /** @var string */
+    private $sqlTotal = null;
 
     /**
      * Parse $_GET to properties
@@ -137,7 +142,9 @@ class NgTable
     private function applyDqlSorting($sortingMapping)
     {
         foreach ($this->sorting as $field => $value) {
-            if (isset($sortingMapping[$field])) {
+			if (is_array($sortingMapping[$field])) {
+                $this->dql->orderBy("{$sortingMapping[$field][0]}", $value);
+            } elseif (isset($sortingMapping[$field])) {
                 $this->dql->orderBy("{$sortingMapping[$field]}", $value);
             } else {
                 throw new \Exception('Wrong sorting passed: ' . var_export($this->sorting, true));
@@ -159,10 +166,12 @@ class NgTable
                 $params[ $parameter->getName()] = $parameter->getValue();
             }
             $debugArray['debug'] = array(
-                'message' => $this->debugMsg,
                 'sql' => $this->dql->select()
                     ->getQuery()->getSQL(),
                 'param' => $params,
+                'debug' => \Hopeter1018\DoctrineExtension\DqlHelper::debug($this->dql->select()->getQuery()),
+                'sqlTotal' => $this->sqlTotal,
+                'message' => $this->debugMsg,
                 'request' => $_GET,
             );
         }
@@ -185,7 +194,11 @@ class NgTable
             $stmt->bindValue(1 + $index, $param->getValue(), $param->getType());
         }
         $stmt->execute();
-        $row = $stmt->fetch();
+
+        if (APP_IS_DEV) {
+            $this->sqlTotal = $stmt->getWrappedStatement()->queryString;
+        }
+		$row = $stmt->fetch();
         return (int) $row['total'];
     }
 
