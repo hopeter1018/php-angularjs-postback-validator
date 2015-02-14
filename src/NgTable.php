@@ -68,6 +68,27 @@ class NgTable
         return new self();
     }
 
+    private function dqlFilterTypeEach($field, $type, $value, $get)
+    {
+        $searchField = $get . \Hopeter1018\Helper\String::randomString(8);
+        $this->dql->setParameter($searchField, $value);
+        (APP_IS_DEV OR APP_IS_UAT) and $this->debugMsg[] = "{$field} {$type} :{$searchField} {$value}";
+        $whereSql = '';
+        switch($type) {
+            case static::FILTERTYPE_GT:
+            case static::FILTERTYPE_GTE:
+            case static::FILTERTYPE_LT:
+            case static::FILTERTYPE_LTE:
+            case static::FILTERTYPE_EQUAL:
+                $whereSql = "{$field} {$type} :{$searchField}";
+                break;
+            default :
+                $whereSql = "{$field} LIKE CONCAT('%', :{$searchField}, '%')";
+                break;
+        }
+        return $whereSql;
+    }
+
     /**
      * Build the where string 
      * and bind parameter
@@ -79,21 +100,15 @@ class NgTable
      */
     private function dqlFilterType($field, $type, $value, $get)
     {
-        $searchField = $get . \Hopeter1018\Helper\String::randomString(8);
-        $this->dql->setParameter($searchField, $value);
-        APP_IS_DEV and $this->debugMsg[] = "{$field} {$type} :{$searchField} {$value}";
-        switch($type) {
-            case static::FILTERTYPE_GT:
-            case static::FILTERTYPE_GTE:
-            case static::FILTERTYPE_LT:
-            case static::FILTERTYPE_LTE:
-            case static::FILTERTYPE_EQUAL:
-                $this->dql->andWhere("{$field} {$type} :{$searchField}");
-                break;
-            default :
-                $this->dql->andWhere("{$field} LIKE CONCAT('%', :{$searchField}, '%')");
-                break;
+        if (is_array($field)) {
+            $dqlFilter = \Hopeter1018\DoctrineExtension\DqlHelper::expr()->orX();
+            foreach ($field as $eachField) {
+                $dqlFilter->add($this->dqlFilterTypeEach($eachField, $type, $value, $get));
+            }
+        } else {
+            $dqlFilter = $this->dqlFilterTypeEach($field, $type, $value, $get);
         }
+        $this->dql->andWhere($dqlFilter);
     }
 
     /**
@@ -124,6 +139,8 @@ class NgTable
                         || $filterMapping[$field][1] === static::FILTERTYPE_EQUAL
                     ) {
                         $this->dqlFilterType($filterMapping[$field][0], $filterMapping[$field][1], $value, $field);
+                    } else {
+                        $this->dqlFilterType($filterMapping[$field], static::FILTERTYPE_LIKE, $value, $field);
                     }
                 } elseif (isset($filterMapping[$field])) {
                     $this->dqlFilterType($filterMapping[$field], static::FILTERTYPE_LIKE, $value, $field);
@@ -142,7 +159,7 @@ class NgTable
     private function applyDqlSorting($sortingMapping)
     {
         foreach ($this->sorting as $field => $value) {
-			if (is_array($sortingMapping[$field])) {
+            if (is_array($sortingMapping[$field])) {
                 $this->dql->orderBy("{$sortingMapping[$field][0]}", $value);
             } elseif (isset($sortingMapping[$field])) {
                 $this->dql->orderBy("{$sortingMapping[$field]}", $value);
