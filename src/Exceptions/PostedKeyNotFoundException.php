@@ -8,6 +8,8 @@
 
 namespace Hopeter1018\AngularjsPostbackValidator\Exceptions;
 
+use Exception;
+
 /**
  * Description of PostedKeyNotFound
  *
@@ -15,7 +17,7 @@ namespace Hopeter1018\AngularjsPostbackValidator\Exceptions;
  * @version $id$
  * @author peter.ho
  */
-class PostedKeyNotFoundException
+class PostedKeyNotFoundException extends Exception
 {
 
     /**

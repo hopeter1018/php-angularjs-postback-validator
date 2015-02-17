@@ -8,13 +8,15 @@
 
 namespace Hopeter1018\AngularjsPostbackValidator\Exceptions;
 
+use Exception;
+
 /**
  * Description of ValidationRulesNotFoundException
  *
  * @version $id$
  * @author peter.ho
  */
-class ValidationRulesNotFoundException
+class ValidationRulesNotFoundException extends Exception
 {
 
     //put your code here
