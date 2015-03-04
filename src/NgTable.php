@@ -31,18 +31,26 @@ class NgTable
      * Parse $_GET to properties
      * @throws \Exception
      */
-    public function __construct()
+    public function __construct($count = null, $page = null, $sorting = null, $filter = null)
     {
+        $this->extra = array();
         if (isset($_GET['count']) and isset($_GET['page'])) {
             $this->count = (int) $_GET['count'];
             $this->page = (int) $_GET['page'];
-            $this->sorting = $_GET['sorting'];
-            $this->extra = array();
             if (isset($_GET['filter']) and is_array($_GET['filter'])) {
                 $this->filter = $_GET['filter'];
             }
             if (isset($_GET['sorting']) and is_array($_GET['sorting'])) {
                 $this->sorting = $_GET['sorting'];
+            }
+        } elseif ($count !== null and $page !== null) {
+            $this->count = (int) $count;
+            $this->page = (int) $page;
+            if (isset($filter) and is_array($filter)) {
+                $this->filter = $filter;
+            }
+            if (isset($sorting) and is_array($sorting)) {
+                $this->sorting = $sorting;
             }
         } else {
             throw new \Exception('Not a ngTable request');
@@ -63,9 +71,9 @@ class NgTable
      * 
      * @return \self
      */
-    public static function init()
+    public static function init($count = null, $page = null, $sorting = null, $filter = null)
     {
-        return new self();
+        return new static($count, $page, $sorting, $filter);
     }
 
     private function dqlFilterTypeEach($field, $type, $value, $get)
@@ -158,13 +166,15 @@ class NgTable
      */
     private function applyDqlSorting($sortingMapping)
     {
-        foreach ($this->sorting as $field => $value) {
-            if (is_array($sortingMapping[$field])) {
-                $this->dql->orderBy("{$sortingMapping[$field][0]}", $value);
-            } elseif (isset($sortingMapping[$field])) {
-                $this->dql->orderBy("{$sortingMapping[$field]}", $value);
-            } else {
-                throw new \Exception('Wrong sorting passed: ' . var_export($this->sorting, true));
+        if (is_array($this->sorting)){
+            foreach ($this->sorting as $field => $value) {
+                if (is_array($sortingMapping[$field])) {
+                    $this->dql->orderBy("{$sortingMapping[$field][0]}", $value);
+                } elseif (isset($sortingMapping[$field])) {
+                    $this->dql->orderBy("{$sortingMapping[$field]}", $value);
+                } else {
+                    throw new \Exception('Wrong sorting passed: ' . var_export($this->sorting, true));
+                }
             }
         }
     }
