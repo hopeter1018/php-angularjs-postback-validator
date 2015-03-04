@@ -18,23 +18,6 @@ class WebRequest
 {
 
     /**
-     * shortcut to json_decode(file_get_contents("php://input"));
-     * 
-     * @return \stdClass
-     */
-    public static function getRequestParams()
-    {
-        $request = json_decode(file_get_contents("php://input"));
-//        if (\Zms5\Helpers\RequestHeaderHelper::has('zms-form-upload')) {
-//            $request = (object) $_POST;
-//        }
-        if (APP_IS_DEV and $request == null) {
-            $request = (object) $_GET;
-        }
-        return $request;
-    }
-
-    /**
      * 
      * @param String $dateString
      * @return \Carbon\Carbon|null
