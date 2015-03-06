@@ -71,7 +71,7 @@ class NgTable
      * 
      * @return \self
      */
-    public static function init($count, $page, $sorting = null, $filter = null)
+    public static function init($count = null, $page = null, $sorting = null, $filter = null)
     {
         return new static($count, $page, $sorting, $filter);
     }
