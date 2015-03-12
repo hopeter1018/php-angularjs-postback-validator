@@ -12,7 +12,9 @@
         }
 	],
     "require": {
-        "timwhitlock/jparser": "dev-master"
+        "querypath/QueryPath": ">=3.0.0",
+        "timwhitlock/jparser": "dev-master",
+        "nesbot/Carbon": "*"
 	},
     "autoload": {
         "psr-4": {
