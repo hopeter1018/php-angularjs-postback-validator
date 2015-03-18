@@ -225,7 +225,7 @@ class NgTable
         if (APP_IS_DEV) {
             $this->sqlTotal = $stmt->getWrappedStatement()->queryString;
         }
-		$row = $stmt->fetch();
+        $row = $stmt->fetch();
         return (int) $row['total'];
     }
 
